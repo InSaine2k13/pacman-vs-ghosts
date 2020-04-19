@@ -21,18 +21,10 @@ public class MyPacMan extends Controller<MOVE>
 		//Locate closest pill
 		int distanceToPill = 0;
 		int closestPillIndex = 0;
-//		for (int pillIndex: game.getActivePillsIndices()) {
-//			if(distanceToPill > game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex)){
-//				//Save index of the closest pill
-//				distanceToPill = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex);
-//				closestPillIndex = pillIndex;
-//			}
-//		}
-
 		for (int pillIndex: game.getActivePillsIndices()) {
-			if(distanceToPill < calculateAvgDistanceFromGhosts(game,pillIndex)){
-				//Save index of the furthest pill
-				distanceToPill = calculateAvgDistanceFromGhosts(game,pillIndex);
+			if(distanceToPill > game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex)){
+				//Save index of the closest pill
+				distanceToPill = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex);
 				closestPillIndex = pillIndex;
 			}
 		}
@@ -61,15 +53,5 @@ public class MyPacMan extends Controller<MOVE>
 		//Check distance to each ghost.
 		//Count all the distance together.
 		return moveToMake;
-	}
-
-	public int calculateAvgDistanceFromGhosts(Game game, int index){
-		int avgDistance = 0;
-		int pinkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY));
-		int inkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.INKY));
-		int blinkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY));
-		int sueDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.SUE));
-		avgDistance = (pinkyDis + inkyDis + blinkyDis + sueDis) / 4;
-		return avgDistance;
 	}
 }
