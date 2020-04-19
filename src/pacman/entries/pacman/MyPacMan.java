@@ -1,6 +1,7 @@
 package pacman.entries.pacman;
 
 import pacman.controllers.Controller;
+import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
@@ -11,12 +12,64 @@ import pacman.game.Game;
  */
 public class MyPacMan extends Controller<MOVE>
 {
-	private MOVE myMove=MOVE.NEUTRAL;
-	
-	public MOVE getMove(Game game, long timeDue) 
+	private MOVE moveToMake=MOVE.NEUTRAL;
+	private int lastPacX = 50;
+
+	public MOVE getMove(Game game, long timeDue)
 	{
 		//Place your game logic here to play the game as Ms Pac-Man
-		
-		return myMove;
+		//Locate closest pill
+		int distanceToPill = 0;
+		int closestPillIndex = 0;
+//		for (int pillIndex: game.getActivePillsIndices()) {
+//			if(distanceToPill > game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex)){
+//				//Save index of the closest pill
+//				distanceToPill = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex);
+//				closestPillIndex = pillIndex;
+//			}
+//		}
+
+		for (int pillIndex: game.getActivePillsIndices()) {
+			if(distanceToPill < calculateAvgDistanceFromGhosts(game,pillIndex)){
+				//Save index of the furthest pill
+				distanceToPill = calculateAvgDistanceFromGhosts(game,pillIndex);
+				closestPillIndex = pillIndex;
+			}
+		}
+
+		int[] indicesToTravel = game.getShortestPath(game.getPacmanCurrentNodeIndex(), closestPillIndex, game.getPacmanLastMoveMade());
+		int pacX = game.getNodeXCood(game.getPacmanCurrentNodeIndex());
+		int pacY = game.getNodeYCood(game.getPacmanCurrentNodeIndex());
+		int nodeX = game.getNodeXCood(indicesToTravel[0]);
+		int nodeY = game.getNodeYCood(indicesToTravel[0]);
+
+
+		// Decide direction to move
+		if(pacX < nodeX) {
+			moveToMake = MOVE.RIGHT;
+		} else if(pacX > nodeX) {
+			moveToMake = MOVE.LEFT;
+		}
+
+		if(pacY < nodeY) {
+			moveToMake = MOVE.DOWN;
+		} else if(pacY > nodeY) {
+			moveToMake = MOVE.UP;
+		}
+
+
+		//Check distance to each ghost.
+		//Count all the distance together.
+		return moveToMake;
+	}
+
+	public int calculateAvgDistanceFromGhosts(Game game, int index){
+		int avgDistance = 0;
+		int pinkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.PINKY));
+		int inkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.INKY));
+		int blinkyDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.BLINKY));
+		int sueDis = game.getShortestPathDistance(index, game.getGhostCurrentNodeIndex(Constants.GHOST.SUE));
+		avgDistance = (pinkyDis + inkyDis + blinkyDis + sueDis) / 4;
+		return avgDistance;
 	}
 }
