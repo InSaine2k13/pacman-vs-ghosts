@@ -17,9 +17,8 @@ public class MyPacMan extends Controller<MOVE>
 
 	public MOVE getMove(Game game, long timeDue)
 	{
-		//Place your game logic here to play the game as Ms Pac-Man
 		//Locate closest pill
-		int distanceToPill = 0;
+		int distanceToPill = 999999;
 		int closestPillIndex = 0;
 		for (int pillIndex: game.getActivePillsIndices()) {
 			if(distanceToPill > game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), pillIndex)){
@@ -29,7 +28,7 @@ public class MyPacMan extends Controller<MOVE>
 			}
 		}
 
-		int[] indicesToTravel = game.getShortestPath(game.getPacmanCurrentNodeIndex(), closestPillIndex, game.getPacmanLastMoveMade());
+		int[] indicesToTravel = game.getShortestPath(game.getPacmanCurrentNodeIndex(), closestPillIndex);
 		int pacX = game.getNodeXCood(game.getPacmanCurrentNodeIndex());
 		int pacY = game.getNodeYCood(game.getPacmanCurrentNodeIndex());
 		int nodeX = game.getNodeXCood(indicesToTravel[0]);
