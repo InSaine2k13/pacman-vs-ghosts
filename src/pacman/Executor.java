@@ -13,8 +13,6 @@ import pacman.controllers.Controller;
 import pacman.controllers.HumanController;
 import pacman.controllers.examples.StarterGhosts;
 import pacman.entries.pacman.LearningPacManTwo;
-import pacman.entries.pacman.MyPacMan;
-import pacman.entries.pacman.StupidLearningPacMan;
 import pacman.game.Game;
 import pacman.game.GameView;
 

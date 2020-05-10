@@ -156,7 +156,7 @@ public class LearningPacManTwo extends Controller<MOVE>
                     }
                 } else {
                     // If it did not change the normal value
-                    indexValues.replace(pacManLastLocationIndex, (indexValues.get(pacManLastLocationIndex) + earnedScore));
+                    indexValues.replace(pacManLastLocationIndex, (indexValues.get(pacManLastLocationIndex) - 1));
                 }
 
                 // Reevaluate the map
