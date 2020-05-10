@@ -1,5 +1,6 @@
 package pacman.entries.pacman;
 
+import com.sun.xml.internal.ws.api.pipe.NextAction;
 import pacman.controllers.Controller;
 import pacman.game.Constants;
 import pacman.game.Constants.MOVE;
@@ -17,57 +18,36 @@ import java.util.Random;
  */
 
 // Kind of learning pacman...
-public class LearningPacMan extends Controller<MOVE>
+public class LearningPacManTwo extends Controller<MOVE>
 {
     private MOVE moveToMake=MOVE.NEUTRAL;
-    private int leftScore = 0;
-    private int upScore = 0;
-    private int downScore = 0;
-    private int rightScore = 0;
     private int lastLives = 3;
-    private int lastScore = 0;
     private int earnedScore = 0;
     private JFrame pacManStatsWindow = new JFrame("Pacman Stats");
-    private JLabel LeftScoreLbl = new JLabel();
-    private JLabel UpScoreLbl = new JLabel();
-    private JLabel DownScoreLbl = new JLabel();
-    private JLabel RightScoreLbl = new JLabel();
+    private JLabel NextAction = new JLabel();
+    HashMap<Integer, Integer> IndexValues = new HashMap<>();
 
     public MOVE getMove(Game game, long timeDue)
     {
         SetupWindow();
-        earnedScore = game.getScore() - lastScore;
-        lastScore = game.getScore();
+        // Give each index on the map a value
+        EvaluateMap(game);
 
-        //Process the reward or punishment
-        if(game.getScore() > lastScore){
-            switch (game.getPacmanLastMoveMade()){
-                case LEFT: leftScore += earnedScore;
-                case RIGHT: rightScore += earnedScore;
-                case UP: upScore += earnedScore;
-                case DOWN: downScore += earnedScore;
-            }
-        } else if(lastLives > game.getPacmanNumberOfLivesRemaining()){
-            switch(game.getPacmanLastMoveMade()){
-                case LEFT: leftScore -= 50;
-                case RIGHT: rightScore -= 50;
-                case UP: upScore -= 50;
-                case DOWN: downScore -= 50;
-            }
-        } else if(game.getScore() == lastScore){
-            moveToMake = chooseRandomMove();
-        }
-
-        if(leftScore == rightScore && upScore == downScore && leftScore == downScore) {
-            moveToMake = chooseRandomMove();
-        } else {
-            moveToMake = chooseBestMove();
-        }
+        //Loop through all the pill indexes and compare them to the map
+        //Save the one that has the highest score and move towards it
 
         return moveToMake;
     }
 
+    public void EvaluateMap(Game game){
+        // Save all the pillIndices in a hashmap a
+        for (int pillIndex: game.getPillIndices()) {
+
+        }
+    }
+
     public MOVE chooseRandomMove(){
+        NextAction.setText("ChoosingRandomMove");
         Random rnd = new Random();
         switch (rnd.nextInt(4)){
             case 0: return MOVE.UP;
@@ -79,11 +59,20 @@ public class LearningPacMan extends Controller<MOVE>
     }
 
     public MOVE chooseBestMove(){
+        NextAction.setText("ChoosingBestMove");
         if(leftScore > rightScore && leftScore > upScore && leftScore > downScore) { return MOVE.LEFT; }
         if(rightScore > leftScore && rightScore > upScore && rightScore > downScore) { return MOVE.RIGHT; }
         if(upScore > rightScore && upScore > leftScore && upScore > downScore) { return MOVE.UP; }
         if(downScore > rightScore && downScore > upScore && downScore > leftScore) { return MOVE.DOWN; }
         return MOVE.NEUTRAL;
+    }
+
+    public void DefaultMapValues(Game game){
+        //for (int i = 1; i <= x; i++){
+       //     for (int j = 1; j <= y; j++){
+
+        //    }
+       // }
     }
 
     public void SetupWindow(){
@@ -92,13 +81,27 @@ public class LearningPacMan extends Controller<MOVE>
         RightScoreLbl.setPreferredSize(new Dimension(400,25));
         DownScoreLbl.setPreferredSize(new Dimension(400,25));
         UpScoreLbl.setPreferredSize(new Dimension(400,25));
-        LeftScoreLbl.setText("Left score: ");
-        RightScoreLbl.setText("Right score: ");
-        DownScoreLbl.setText("Down score: ");
-        UpScoreLbl.setText("Up score: ");
+        NextAction.setPreferredSize(new Dimension(400,25));
+
+        // Set label text
+        EarnedScoreLbl.setText("Earned score: " + earnedScore);
+        LeftScoreLbl.setText("Left score: " + leftScore);
+        RightScoreLbl.setText("Right score: " + rightScore);
+        DownScoreLbl.setText("Down score: " + downScore);
+        UpScoreLbl.setText("Up score: " + upScore);
+        NextAction.setText("");
+
+        pacManStatsWindow.add(NextAction);
+        pacManStatsWindow.add(EarnedScoreLbl);
+        pacManStatsWindow.add(LeftScoreLbl);
+        pacManStatsWindow.add(RightScoreLbl);
+        pacManStatsWindow.add(DownScoreLbl);
+        pacManStatsWindow.add(UpScoreLbl);
         pacManStatsWindow.pack();
         pacManStatsWindow.setVisible(true);
         pacManStatsWindow.repaint();
     }
+
+
 
 }
