@@ -13,6 +13,7 @@ import pacman.controllers.Controller;
 import pacman.controllers.HumanController;
 import pacman.controllers.examples.StarterGhosts;
 import pacman.entries.pacman.LearningPacManTwo;
+import pacman.entries.pacman.LearningPacManThree;
 import pacman.game.Game;
 import pacman.game.GameView;
 
@@ -53,7 +54,7 @@ public class Executor
 		//run the game in asynchronous mode.
 		boolean visual=true;
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-		exec.runGameTimed(new LearningPacManTwo(),new StarterGhosts(),visual);
+		exec.runGameTimed(new LearningPacManThree(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
 		//*/
 		

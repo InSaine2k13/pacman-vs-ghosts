@@ -58,6 +58,7 @@ public class LearningPacManTwo extends Controller<MOVE>
 
         try {
             int[] indicesToTravel = game.getShortestPath(game.getPacmanCurrentNodeIndex(), decideWhereToGo(game));
+
             int pacX = game.getNodeXCood(game.getPacmanCurrentNodeIndex());
             int pacY = game.getNodeYCood(game.getPacmanCurrentNodeIndex());
             int nodeX = game.getNodeXCood(indicesToTravel[0]);
@@ -110,16 +111,16 @@ public class LearningPacManTwo extends Controller<MOVE>
                 }
             }
         }
- //1% chance to choose a completely random index
-//        Random rnd = new Random();
-//        Random rndL = new Random();
-//        if(rnd.nextInt(100) == 1 || bestIndex == 0){
-//            for (int pillIndex: game.getPillIndices()) {
-//                if(rndL.nextInt(10) == rnd.nextInt(10) || bestIndex == 0){
-//                    bestIndex = pillIndex;
-//                }
-//            }
-//        }
+// 1% chance to choose a completely random index
+        Random rnd = new Random();
+        Random rndL = new Random();
+        if(rnd.nextInt(10) == 1){
+            for (int pillIndex: game.getPillIndices()) {
+                if(rndL.nextInt(10) == rnd.nextInt(10)){
+                    bestIndex = pillIndex;
+                }
+            }
+        }
         StatusLbl.setText("Status: Best index to go is: " + bestIndex);
         return bestIndex;
     }
