@@ -27,9 +27,11 @@ public class LearningPacManThree extends Controller<MOVE>
     private int earnedScore = 0;
     private int lastScore = 0;
     private int pacManLastLocationIndex = 0;
+    private int pacManPriorToLastLocationIndex = 0;
     private int lastLevel = 0;
     private int lastLives = 3;
-    private double epsilonValue = 0.75;
+    private double epsilonValue = 0.99;
+    private MOVE lastMove = MOVE.NEUTRAL;
 
     private JFrame pacManStatsWindow = new JFrame("Pacman Stats");
     private JLabel StatusLbl = new JLabel();
@@ -43,7 +45,7 @@ public class LearningPacManThree extends Controller<MOVE>
     private JLabel PacManLastLocationIndexLbl = new JLabel();
     private JLabel LastLevelLbl = new JLabel();
     private JLabel LastLivesLbl = new JLabel();
-
+    private JLabel ErrorLbl = new JLabel();
 
     HashMap<Integer, Double> indexValueUp = new HashMap<>();
     HashMap<Integer, Double> indexValueDown = new HashMap<>();
@@ -65,6 +67,7 @@ public class LearningPacManThree extends Controller<MOVE>
 
         // Save stats of this turn
         lastScore = game.getScore();
+        lastMove = game.getPacmanLastMoveMade();
         pacManLastLocationIndex = game.getPacmanCurrentNodeIndex();
         lastLevel = game.getCurrentLevel();
         lastLives = game.getPacmanNumberOfLivesRemaining();
@@ -91,35 +94,54 @@ public class LearningPacManThree extends Controller<MOVE>
 
         //Check last move that was made and based on that and score change give last index a value for a specific direction
 
-        //Give 1 score eitherway
-        earnedScore += 1;
         switch(game.getPacmanLastMoveMade()){
             case RIGHT:
                 try{
-                    indexValueRight.replace(pacManLastLocationIndex, (indexValueRight.get(pacManLastLocationIndex) + (earnedScore * epsilonValue)));
+                    double rightEarnedScore = earnedScore;
+                    if(earnedScore == 0.0) {rightEarnedScore = indexValueRight.get(game.getPacmanCurrentNodeIndex());}
+                    double rightReplacementValue = (indexValueRight.get(pacManLastLocationIndex) + (rightEarnedScore * epsilonValue));
+                    if(rightReplacementValue > indexValueRight.get(pacManLastLocationIndex)){
+                        indexValueRight.replace(pacManLastLocationIndex, (indexValueRight.get(pacManLastLocationIndex) + (rightEarnedScore * epsilonValue)));
+                    }
                 } catch (Exception e) { indexValueRight.put(pacManLastLocationIndex, earnedScore * epsilonValue); }
                 break;
             case LEFT:
                 try{
-                    indexValueLeft.replace(pacManLastLocationIndex, (indexValueLeft.get(pacManLastLocationIndex) + (earnedScore * epsilonValue)));
+                    double leftEarnedScore = earnedScore;
+                    if(earnedScore == 0.0) {leftEarnedScore = indexValueLeft.get(game.getPacmanCurrentNodeIndex());}
+                    double leftReplacementValue = (indexValueLeft.get(pacManLastLocationIndex) + (leftEarnedScore * epsilonValue));
+                    if(leftReplacementValue > indexValueLeft.get(pacManLastLocationIndex)){
+                        indexValueLeft.replace(pacManLastLocationIndex, leftReplacementValue);
+                    }
                 } catch (Exception e) { indexValueLeft.put(pacManLastLocationIndex, earnedScore * epsilonValue); }
                 break;
             case UP:
                 try{
-                    indexValueUp.replace(pacManLastLocationIndex, (indexValueUp.get(pacManLastLocationIndex) + (earnedScore * epsilonValue)));
+                    double upEarnedScore = earnedScore;
+                    if(earnedScore == 0.0) {upEarnedScore = indexValueUp.get(game.getPacmanCurrentNodeIndex());}
+                    double upReplacementValue = (indexValueUp.get(pacManLastLocationIndex) + (upEarnedScore * epsilonValue));
+                    if(upReplacementValue > indexValueUp.get(pacManLastLocationIndex)){
+                        indexValueUp.replace(pacManLastLocationIndex, upReplacementValue);
+                    }
                 } catch (Exception e) { indexValueUp.put(pacManLastLocationIndex, earnedScore * epsilonValue); }
                 break;
             case DOWN:
                 try{
-                    indexValueDown.replace(pacManLastLocationIndex, (indexValueDown.get(pacManLastLocationIndex) + (earnedScore * epsilonValue)));
+                    double downEarnedScore = earnedScore;
+                    if(earnedScore == 0.0) {downEarnedScore = indexValueDown.get(game.getPacmanCurrentNodeIndex());}
+                    double downReplacementValue = (indexValueDown.get(pacManLastLocationIndex) + (downEarnedScore * epsilonValue));
+                    if(downReplacementValue > indexValueDown.get(pacManLastLocationIndex)){
+                        indexValueDown.replace(pacManLastLocationIndex, downReplacementValue);
+                    }
                 } catch (Exception e) { indexValueDown.put(pacManLastLocationIndex, earnedScore * epsilonValue); }
                 break;
             default:
                 break;
         }
 
+
         Random rnd = new Random();
-        if(rnd.nextInt(100) == 1) { return chooseRandomMove(); }
+        if(rnd.nextInt(20) == 1 || pacManLastLocationIndex == game.getPacmanCurrentNodeIndex()) { return chooseRandomMove(); }
 
         if(leftScore > rightScore && leftScore > upScore && leftScore > downScore) { return MOVE.LEFT; }
         if(rightScore > leftScore && rightScore > upScore && rightScore > downScore) { return MOVE.RIGHT; }
@@ -153,6 +175,7 @@ public class LearningPacManThree extends Controller<MOVE>
         UpScoreLbl.setPreferredSize(new Dimension(400,25));
         DownScorelbl.setPreferredSize(new Dimension(400,25));
         RightScoreLbl.setPreferredSize(new Dimension(400,25));
+        ErrorLbl.setPreferredSize(new Dimension(400,25));
 
         // Set label text
         StatusLbl.setText("Status: ");
@@ -182,6 +205,7 @@ public class LearningPacManThree extends Controller<MOVE>
         pacManStatsWindow.add(DownScorelbl);
         pacManStatsWindow.add(LastLevelLbl);
         pacManStatsWindow.add(LastLivesLbl);
+        pacManStatsWindow.add(ErrorLbl);
         pacManStatsWindow.pack();
         pacManStatsWindow.setVisible(true);
         pacManStatsWindow.repaint();
